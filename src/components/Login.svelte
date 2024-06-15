@@ -40,8 +40,12 @@
       console.log(res.user);
       if (res.user) {
         console.log("User logged in successfully:", res.user);
-        userStore.set(res.user); 
-        goto("/dashboard"); 
+        if (typeof window !== "undefined") {
+        
+          sessionStorage.setItem("user", JSON.stringify(res.user));
+        }
+        userStore.set(res.user);
+        goto("/dashboard");
       } else {
         console.log("User not found:", userData.email);
         // Handle case where user is not found

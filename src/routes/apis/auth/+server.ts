@@ -3,7 +3,7 @@ import { json, type Actions } from "@sveltejs/kit";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import type { RequestEvent } from "./$types";
 
-export function GET() {
+export async function GET() {
     console.log("work")
     return json("hii")
 

@@ -1,30 +1,53 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
+  import { createUserWithEmailAndPassword } from "firebase/auth";
   import userStore from "../store";
+  import { auth } from "$lib/firebase";
 
   let userData = {
     email: "u@g.com",
     password: "123456",
   };
+  // async function handleRegister() {
+  //   try {
+  //     const res = await fetch("apis/auth", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ userData }),
+  //     });
+  //     if (res.ok) {
+  //       const data = await res.json();
+  //       console.log("User created successfully:", data);
+  //       userStore.set(data.user);
+  //       goto("/dashboard"); // Redirect to the dashboard
+  //     } else {
+  //       let errorData = await res.json();
+  //       alert(errorData);
+  //       console.log("Error in response:", errorData);
+  //     }
+  //   } catch (e) {
+  //     console.error("An error occurred:", e);
+  //   }
+  // }
   async function handleRegister() {
     try {
-      const res = await fetch("apis/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userData }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        console.log("User created successfully:", data);
-        userStore.set(data.user);
-        goto("/dashboard"); // Redirect to the dashboard
+      const res = await createUserWithEmailAndPassword(
+        auth,
+        userData.email,
+        userData.password
+      );
+      console.log(res.user);
+      if (res.user) {
+        console.log("User Registerd:", res.user);
+        userStore.set(res.user); 
+        goto("/dashboard"); 
       } else {
-        let errorData = await res.json();
-        alert(errorData);
-        console.log("Error in response:", errorData);
+        console.log("User not found:", userData.email);
+        // Handle case where user is not found
       }
-    } catch (e) {
-      console.error("An error occurred:", e);
+    } catch (error) {
+      alert(error)
+      console.error("Error creating user:", error);
     }
   }
 </script>

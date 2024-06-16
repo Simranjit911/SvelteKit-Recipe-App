@@ -2,79 +2,99 @@
   import { recipesRef, storage } from "$lib/firebase";
   import { addDoc, serverTimestamp } from "firebase/firestore";
   import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import userStore from "../store";
   import { get } from "svelte/store";
   import { goto } from "$app/navigation";
 
   let user = get(userStore);
+  
 
-  export let showModal: boolean;
+  export let showUpdateModal: boolean;
+  export let recipeId: string;
+  let userId = user?.uid;
+
   const dispatch = createEventDispatcher();
 
   function closeModal() {
-    showModal = false;
-    dispatch("close");
+    showUpdateModal = false;
+    dispatch("closeUpdateModal");
   }
+  let formData = {};
+  async function getData() {
+    try {
+      let res = await fetch(`/apis/recipes/${recipeId}`, {
+        headers: {
+          userid: userId,
+        },
+      });
+
+      if (res.ok) {
+        let data = await res.json();
+
+        formData = { ...data.recipe };
+      } else {
+        let errorData = await res.json();
+        console.error("Error fetching data:", errorData);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  onMount(() => {
+    getData();
+  });
 
   async function handleForm(event: Event) {
-    event.preventDefault();
+    // const form = event.target as HTMLFormElement;
+    // const formDataImg = new FormData(form);
 
-    const form = event.target as HTMLFormElement;
-    const formData = new FormData(form);
+    // let image = formDataImg.get("image");
+    // console.log(image);
 
-    const imageFile = formData.get("image") as File;
-
-    if (
-      imageFile &&
-      !["image/jpeg", "image/png", "image/gif"].includes(imageFile.type)
-    ) {
-      alert("Please upload a valid image file (JPEG, PNG, or GIF).");
-      return;
-    }
-    const data = {
-      name: formData.get("name") as string,
-      image: formData.get("image") as File,
-      ingredients: formData.get("ingredients") as string,
-      description: formData.get("description") as string,
+    const bodyData = {
+      recipeData: {
+        name: formData.name,
+        description: formData.description,
+        ingredients: formData.ingredients,
+      },
+      newImageFile: image || null,
     };
+    console.log(bodyData);
 
     try {
-      let storageref = ref(storage, `images/${data.image.name}`);
-      let snapShot = await uploadBytes(storageref, data.image);
-      let imageUrl = await getDownloadURL(snapShot.ref);    
-      let newRecipe = {
-        name: data.name,
-        uid: user?.uid,
-        imageUrl,
-        ingredients: data.ingredients,
-        description: data.description,
-        collection: false,
-        createdAt: serverTimestamp(),
-      };
+      let res = await fetch(`/apis/recipes/${recipeId}`, {
+        method: "PATCH",
+        headers: {
+          userid: userId,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      });
 
-      let res = await addDoc(recipesRef, newRecipe);
-      console.log(res);
-      if (res.id) {
-        alert("Data added");
-        closeModal();
+      if (res.ok) {
+        let data = await res.json();
+        closeModal()
+        goto("/dashboard")
+      } else {
+        let errorData = await res.json();
+        console.error("Error updating recipe:", errorData);
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.error("Error updating recipe:", error);
     }
+    
   }
+
+ 
 </script>
 
-<div
-  class="modal fade show"
-  style="display: block;"
-  tabindex="-1"
-  role="dialog"
->
+<div class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Add New Recipe</h5>
+        <h5 class="modal-title">Update Recipe</h5>
         <button type="button" class="close text-white" on:click={closeModal}>
           <span aria-hidden="true">&times;</span>
         </button>
@@ -90,28 +110,22 @@
               class="form-control"
               placeholder="Enter recipe name"
               required
+              bind:value={formData.name}
             />
           </div>
           <div class="form-group">
             <label for="image" class="form-label">Recipe Image</label>
-            <input
-              type="file"
-              id="image"
-              name="image"
-              accept="image/jpeg, image/png, image/gif"
-              class="form-control"
-              required
-            />
+            <input type="file" id="image" name="image" class="form-control" />
           </div>
           <div class="form-group">
             <label for="ingredients" class="form-label">Ingredients</label>
             <textarea
+              bind:value={formData.ingredients}
               id="ingredients"
               name="ingredients"
               class="form-control"
               rows="3"
               placeholder="Enter ingredients, separated by commas"
-              required
             ></textarea>
           </div>
           <div class="form-group">
@@ -121,12 +135,11 @@
               name="description"
               class="form-control"
               rows="5"
+              bind:value={formData.description}
               placeholder="Enter description"
-              required
             ></textarea>
           </div>
-          <button type="submit" class="btn btn-primary w-100">Add Recipe</button
-          >
+          <button type="submit" class="btn btn-primary w-100">Update Recipe</button>
         </form>
       </div>
     </div>

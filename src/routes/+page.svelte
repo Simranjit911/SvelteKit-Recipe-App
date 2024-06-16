@@ -6,10 +6,13 @@
   import { goto } from "$app/navigation";
   import userStore from "../store";
   import { get } from "svelte/store";
-  let user =get(userStore)
-if(user){
-  goto("/dashboard")
-}
+  import { browser } from "$app/environment";
+  let user = get(userStore);
+  if (browser) {
+    if (user) {
+      goto("/dashboard", { replaceState: true });
+    }
+  }
 
   let select = "login";
 </script>
@@ -53,8 +56,8 @@ if(user){
   .selected {
     font-weight: bold;
   }
-  button{
-      outline: none;
+  button {
+    outline: none;
     border: none;
     background-color: gray;
     color: white;
@@ -64,6 +67,5 @@ if(user){
   .active {
     font-weight: bold;
     background-color: rgb(0 123 255);
-  
   }
 </style>

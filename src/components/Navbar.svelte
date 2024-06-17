@@ -4,16 +4,27 @@
   import { goto } from "$app/navigation";
   import { auth, recipesRef } from "$lib/firebase";
   import { redirect } from "@sveltejs/kit";
-  import userStore, { loadUserFromSessionStorage } from "../store";
+  import userStore, {
+    loadUserFromSessionStorage,
+    resetBtnClick,
+  } from "../store";
   import { onAuthStateChanged, signOut } from "firebase/auth";
   import type { User } from "firebase/auth";
   import AddnewRecipe from "./AddnewRecipe.svelte";
-  import { collection, getDocs, onSnapshot, query, where } from "firebase/firestore";
+  import {
+    collection,
+    getDocs,
+    onSnapshot,
+    query,
+    where,
+  } from "firebase/firestore";
   import { recipesStore } from "../store";
+  import { toast } from "@jill64/svelte-toast";
   let user: User | null;
   userStore.subscribe((v) => {
     user = v;
   });
+
   let showModal = false;
   function handleModalClose() {
     showModal = false;
@@ -25,50 +36,62 @@
       return;
     }
 
-    // Firestore query
-    const recipesCollection = collection(recipesRef, "recipes");
+    const searchTerm = searchVal.toLowerCase();
+
     const nameQuery = query(
-      recipesCollection,
+      recipesRef,
       where("uid", "==", user.uid),
-      where("name", ">=", searchVal),
-      where("name", "<=", searchVal + "\uf8ff")
+      where("name", ">=", searchTerm),
+      where("name", "<=", searchTerm + "\uf8ff")
     );
+
     const ingredientsQuery = query(
-      // recipesCollection,
+      recipesRef,
       where("uid", "==", user.uid),
-      where("ingredients", "array-contains", searchVal)
+      where("ingredients", ">=", searchTerm),
+      where("ingredients", "<=", searchTerm + "\uF8ff")
     );
 
     try {
-      // Execute the queries
       const nameSnapshot = await getDocs(nameQuery);
       const ingredientsSnapshot = await getDocs(ingredientsQuery);
 
-      // Combine results
       let searchResults = [
-        ...nameSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
-        ...ingredientsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+        ...nameSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+        ...ingredientsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })),
       ];
 
-      // Remove duplicates
-      searchResults = Array.from(new Set(searchResults.map(recipe => recipe.id)))
-        .map(id => searchResults.find(recipe => recipe.id === id));
+      searchResults = Array.from(
+        new Set(searchResults.map((recipe) => recipe.id))
+      ).map((id) => searchResults.find((recipe) => recipe.id === id));
 
-      // Update the store
       recipesStore.set(searchResults);
     } catch (error) {
       console.error("Error searching for recipes:", error);
     }
   }
+  let resetBtn = false;
+  resetBtnClick.subscribe((val) => {
+    resetBtn = val;
+    if (val) {
+      searchVal = "";
+      handleSearch();
+      resetBtnClick.set(false);
+    }
+  });
+
   onSnapshot(
     recipesRef,
     (snapshot) => {
-      const recipes = snapshot.docs.map((doc) => ({
+      let recipes = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+      recipes = recipes?.filter((r) => r?.uid == user?.uid);
       recipesStore.set(recipes);
-      console.log(recipes);
     },
     (error) => {
       console.error("Error fetching recipes:", error);
@@ -109,6 +132,8 @@
     try {
       await signOut(auth);
       loadUserFromSessionStorage();
+      recipesStore.set([]);
+      $toast.success("Logout Successfully");
       // userStore.set(null)
       // goto('/', { replaceState: true }); // Redirect to home page after logout
     } catch (error) {
@@ -163,16 +188,12 @@
                 placeholder="Search Recipes by Name,Ingredients"
                 aria-label="Search"
               />
-              <button class="btn btn-success" on:click={handleSearch}>Search</button>
+              <button class="btn btn-success" on:click={handleSearch}
+                >Search</button
+              >
             </form>
           </li>
-          <!-- <li class="nav-item">
-            <button
-              on:click={() => (showModal = true)}
-              on:close={() => (showModal = true)}
-              class="btn btn-primary">Add New</button
-            >
-          </li> -->
+
           <li class="nav-item">
             <button on:click={handleLogout} class="btn btn-danger"
               >Logout</button

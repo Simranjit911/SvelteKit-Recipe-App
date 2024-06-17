@@ -7,6 +7,7 @@
   import UpdateRecipe from "../../../components/UpdateRecipe.svelte";
   import userStore from "../../../store";
   import { collection } from "firebase/firestore";
+  import { toast } from "@jill64/svelte-toast";
   let showUpdateModal = false;
   function handleModalClose() {
     showUpdateModal = false;
@@ -19,32 +20,40 @@
   let recipeId = $page.params.recipeId;
 
   async function handleDelete() {
-    try {
-      const res = await fetch(
-        `http://localhost:5173/apis/recipes/${recipeId}`,
-        {
-          method: "DELETE",
-          headers: {
-            userId,
-          },
-        }
-      );
+    $toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          const res = await fetch(
+            `http://localhost:5173/apis/recipes/${recipeId}`,
+            {
+              method: "DELETE",
+              headers: {
+                userId,
+              },
+            }
+          );
 
-      if (res.ok) {
-        const result = await res.json();
-        alert(result.msg);
-        goto("/dashboard");
-      } else {
-        const error = await res.json();
-        alert(error.error);
+          if (res.ok) {
+            const result = await res.json();
+            resolve(result.msg);
+            goto("/dashboard");
+          } else {
+            const error = await res.json();
+            alert(error.error);
+          }
+        } catch (error) {
+          console.error("Error deleting recipe:", error);
+          reject("Failed to Delete Recipe");
+        }
+      }),
+      {
+        loading: "Deleting Recipe",
+        success: "Recipe Deleted Successfully",
+        error: (e) => e,
       }
-    } catch (error) {
-      console.error("Error deleting recipe:", error);
-      alert("An error occurred while deleting the recipe.");
-    }
+    );
   }
   async function addToCollection() {
-
     let bodyData = {
       recipeData: { ...data.recipe, collection: !data.recipe.collection },
     };
@@ -58,11 +67,12 @@
         body: JSON.stringify(bodyData),
       });
       if (res.ok) {
-        alert("Recipe Added to collection");
+        $toast.success("Collection Updated Successfully")
         goto("/dashboard/collection");
       }
     } catch (error) {
-      console.log(error);
+   
+      $toast.error("Fail to Update Collection")
     }
   }
 </script>

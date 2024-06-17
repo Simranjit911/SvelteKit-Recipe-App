@@ -18,44 +18,47 @@
 </script>
 
 <AuthCheck>
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="">
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex align-items-center gap-4 justify-content-center">
-              <button
-                class:active={select === "login"}
-                class="btn btn-primary"
-                on:click={() => (select = "login")}
+  {#if user==null}
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="">
+          <div class="card">
+            <div class="card-body">
+              <div
+                class="d-flex align-items-center gap-4 justify-content-center"
               >
-                Login
-              </button>
-              <button
-                class:active={select === "register"}
-                class="btn btn-primary"
-                on:click={() => (select = "register")}
-              >
-                Register
-              </button>
+                <button
+                  class:active={select === "login"}
+                  class="btn btn-primary"
+                  on:click={() => (select = "login")}
+                >
+                  Login
+                </button>
+                <button
+                  class:active={select === "register"}
+                  class="btn btn-primary"
+                  on:click={() => (select = "register")}
+                >
+                  Register
+                </button>
+              </div>
+              {#if select === "login"}
+                <Login />
+              {/if}
+              {#if select === "register"}
+                <Register />
+              {/if}
             </div>
-            {#if select === "login"}
-              <Login />
-            {/if}
-            {#if select === "register"}
-              <Register />
-            {/if}
           </div>
         </div>
       </div>
     </div>
-  </div>
+  {:else}
+    <h1 class="text-center">Unauthorized Access</h1>
+  {/if}
 </AuthCheck>
 
 <style>
-  .selected {
-    font-weight: bold;
-  }
   button {
     outline: none;
     border: none;

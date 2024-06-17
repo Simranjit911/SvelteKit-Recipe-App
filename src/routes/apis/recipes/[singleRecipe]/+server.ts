@@ -74,10 +74,10 @@ export async function PATCH(requestEvent) {
     let { request, params } = requestEvent
     let { recipeData } = await request.json()
     const { singleRecipe } = params;
-
     console.log(recipeData)
+
     let userId = request.headers.get('userid')
-console.log(userId)
+
     try {
         //     // Get the existing recipe document from Firestore
         const recipeDocRef = doc(recipesRef, singleRecipe);
@@ -93,32 +93,10 @@ console.log(userId)
         }
 
 
-        // Update the recipe data 
+
         await updateDoc(recipeDocRef, recipeData);
 
-        //     // Check if a new image file is provided for update
-        //     if (newImageFile) {
-        //         // Delete the existing image from Firebase Storage
-        //         const existingImageUrl = existingRecipeData.imageUrl;
-        //         if (existingImageUrl) {
-        //             const existingImageRef = ref(storage, existingImageUrl);
-        //             await deleteObject(existingImageRef);
-        //         }
 
-        //         // Upload the new image file to Firebase Storage
-
-        //         const imageName = `${Date.now()}_${newImageFile.name}`;
-        //         const newImageRef = ref(storage, `images/${imageName}`);
-        //         let snapShotRef = await uploadBytes(newImageRef, newImageFile);
-
-        //         // Get the download URL of the newly uploaded image
-
-        //         const newImageUrl = await getDownloadURL(snapShotRef.ref);;
-
-        //         // Update the imageUrl field in the recipe document
-
-        //         await updateDoc(recipeDocRef, { imageUrl: newImageUrl });
-        //     }
 
         return json({ msg: 'Recipe updated successfully' }, { status: 200 });
     } catch (error) {

@@ -5,15 +5,16 @@ import { auth } from '$lib/firebase';
 
 const userStore = writable<User | null>(null);
 export const recipesStore = writable([])
+export const resetBtnClick = writable(false)
 
 
 export function loadUserFromSessionStorage() {
-  console.log("call")
+
   if (typeof window !== "undefined") {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
       userStore.set(JSON.parse(storedUser));
-      console.log(storedUser)
+
       return storedUser
     }
     return null
@@ -44,5 +45,5 @@ onAuthStateChanged(auth, (user) => {
 //     }
 //   });
 let user = get(userStore)
-console.log(user)
+
 export default userStore;

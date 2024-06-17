@@ -6,9 +6,18 @@
   import { auth } from "$lib/firebase";
   import userStore from "../store";
   import { onAuthStateChanged } from "firebase/auth";
+  import { Toaster } from "@jill64/svelte-toast";
 
   let user = null;
-
+  let palette = {
+    background: '#EEE',
+    text: '#000',
+    success: '#29cf60',
+    error: '#cf3d29',
+    secondary: '#FFF',
+    loading: '#BBB',
+    
+  }
   // onMount(() => {
   //   onAuthStateChanged(auth, (user) => {
   //     if (user) {
@@ -27,4 +36,5 @@
 <Navbar />
 <div class="container w-full">
   <slot />
+  <Toaster {palette} position="top-right" />
 </div>

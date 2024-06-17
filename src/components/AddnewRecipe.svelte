@@ -6,6 +6,7 @@
   import userStore from "../store";
   import { get } from "svelte/store";
   import { goto } from "$app/navigation";
+  import { toast } from "@jill64/svelte-toast";
 
   let user = get(userStore);
 
@@ -18,6 +19,7 @@
   }
 
   async function handleForm(event: Event) {
+
     event.preventDefault();
 
     const form = event.target as HTMLFormElement;
@@ -39,29 +41,41 @@
       description: formData.get("description") as string,
     };
 
-    try {
-      let storageref = ref(storage, `images/${data.image.name}`);
-      let snapShot = await uploadBytes(storageref, data.image);
-      let imageUrl = await getDownloadURL(snapShot.ref);    
-      let newRecipe = {
-        name: data.name,
-        uid: user?.uid,
-        imageUrl,
-        ingredients: data.ingredients,
-        description: data.description,
-        collection: false,
-        createdAt: serverTimestamp(),
-      };
+    $toast.promise(
+      new Promise(async (resolve, reject) => {
+        try {
+          let storageref = ref(storage, `images/${data.image.name}`);
+          let snapShot = await uploadBytes(storageref, data.image);
+          let imageUrl = await getDownloadURL(snapShot.ref);
 
-      let res = await addDoc(recipesRef, newRecipe);
-      console.log(res);
-      if (res.id) {
-        alert("Data added");
-        closeModal();
+          let newRecipe = {
+            name: data.name,
+            uid: user?.uid,
+            imageUrl,
+            ingredients: data.ingredients,
+            description: data.description,
+            collection: false,
+            createdAt: serverTimestamp(),
+          };
+
+          let res = await addDoc(recipesRef, newRecipe);
+
+          if (res.id) {
+            resolve("Recipe Added!");
+            closeModal();
+          } else {
+            reject(new Error("Failed to add recipe"));
+          }
+        } catch (e) {
+          reject(e);
+        }
+      }),
+      {
+        loading: 'Adding Recipe...',
+        success: 'Recipe Added!',
+        error: (err) => `Failed to add recipe: ${err.message}`
       }
-    } catch (e) {
-      console.log(e);
-    }
+    );
   }
 </script>
 

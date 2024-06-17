@@ -41,7 +41,7 @@
     return text.toUpperCase();
   }
 
-  console.log(recipes);
+ 
 </script>
 
 {#if !user}

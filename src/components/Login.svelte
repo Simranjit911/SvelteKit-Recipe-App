@@ -3,6 +3,7 @@
   import { auth } from "$lib/firebase";
   import { signInWithEmailAndPassword } from "firebase/auth";
   import userStore from "../store";
+  import { toast } from "@jill64/svelte-toast";
 
   let userData = {
     email: "u@g.com",
@@ -37,21 +38,20 @@
         userData.email,
         userData.password
       );
-      console.log(res.user);
+
       if (res.user) {
-        console.log("User logged in successfully:", res.user);
+        $toast.success("Login Successfully");
         if (typeof window !== "undefined") {
-        
           sessionStorage.setItem("user", JSON.stringify(res.user));
         }
         userStore.set(res.user);
         goto("/dashboard");
       } else {
         console.log("User not found:", userData.email);
-        // Handle case where user is not found
+        $toast.error("User not Found", userData.email);
       }
     } catch (error) {
-      console.error("Error creating user:", error);
+      $toast.error(error.message);
     }
   }
 </script>

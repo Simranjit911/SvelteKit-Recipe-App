@@ -1,5 +1,5 @@
 import { get } from "svelte/store";
-import userStore, { loadUserFromSessionStorage, recipesStore } from "../../store";
+import userStore, { loadUserFromSessionStorage, loadingStore, recipesStore } from "../../store";
 import type { PageLoad } from "./$types";
 import { getDocs, query, where } from "firebase/firestore";
 import { recipesRef } from "$lib/firebase";
@@ -38,6 +38,7 @@ import { recipesRef } from "$lib/firebase";
 // };
 export const load: PageLoad = async () => {
     try {
+        loadingStore.set(true)
         let user = loadUserFromSessionStorage();
         user = user ? JSON.parse(user) : null;
 

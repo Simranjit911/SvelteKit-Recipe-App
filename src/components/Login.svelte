@@ -6,31 +6,10 @@
   import { toast } from "@jill64/svelte-toast";
 
   let userData = {
-    email: "u@g.com",
-    password: "123456",
+    email: "",
+    password: "",
   };
 
-  // async function handleLogin() {
-  //   try {
-  //     const res = await fetch("apis/auth/login", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ userData }),
-  //     });
-  //     if (res.ok) {
-  //       const data = await res.json();
-  //       console.log("User Login successfully:", data);
-  //       userStore.set(data.user);
-  //       goto("/dashboard"); // Redirect to the dashboard
-  //     } else {
-  //       let errorData = await res.json();
-  //       alert(errorData);
-  //       console.log("Error in response:", errorData);
-  //     }
-  //   } catch (e) {
-  //     console.error("An error occurred:", e);
-  //   }
-  // }
   async function handleLogin() {
     try {
       const res = await signInWithEmailAndPassword(
@@ -58,33 +37,37 @@
 
 <div class="container mt-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="text-center">Login Now!</h3>
+    <div class="col-md-8">
+      <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+          <h3 class="text-center mb-0">Login Now!</h3>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
           <form on:submit|preventDefault={handleLogin} action="">
-            <div class="form-group">
+            <div class="form-group mb-3">
+              <label for="email" class="form-label">Email address</label>
               <input
                 type="email"
                 class="form-control"
+                id="email"
                 placeholder="Enter Email"
                 bind:value={userData.email}
                 required
               />
             </div>
-            <div class="form-group">
+            <div class="form-group mb-4">
+              <label for="password" class="form-label">Password</label>
               <input
                 required
                 min="6"
                 type="password"
                 class="form-control"
+                id="password"
                 placeholder="Enter Password"
                 bind:value={userData.password}
               />
             </div>
-            <button type="submit" class="btn btn-primary btn-block">
+            <button type="submit" class="btn btn-primary btn-block w-100">
               Submit
             </button>
           </form>
@@ -93,3 +76,23 @@
     </div>
   </div>
 </div>
+
+<style>
+  .card {
+    border-radius: 0.5rem;
+  }
+  .card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    padding: 1rem 1.25rem;
+  }
+  .form-label {
+    margin-bottom: 0.5rem;
+  }
+  .form-control {
+    border-radius: 0.25rem;
+  }
+  .btn {
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+</style>

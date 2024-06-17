@@ -1,38 +1,24 @@
-# create-svelte
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+# SvelteKit Full Stack Project
 
-## Creating a project
+>A full stack project built with SvelteKit, TypeScript, and Firebase to manage and explore recipes. This application allows users to create, read, update, delete, and search for recipes, as well as add recipes to a personal collection.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Technologies Used
+- **SvelteKit**
+- **TypeScript**
+- **Firebase**
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Features
+- **User Authentication**: Secure user authentication using Firebase.
+- **Image Upload**: Upload recipe images to Firebase storage.
+- **Create New Recipes**: Easily add new recipes with a user-friendly interface.
+- **Update Recipes**: Modify existing recipes to keep your collection up to date.
+- **Delete Recipes**: Remove recipes you no longer need with a simple click.
+- **Read Recipes**: View detailed information about each recipe.
+- **Search Recipes**: Find recipes by name, ingredients, or description using a powerful search functionality.
+- **Add to Personal Collection**: Save your favorite recipes to a personal collection for easy access.
+- **Recipe Details Page**: View comprehensive details of each recipe on a dedicated page.
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
 
-## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.

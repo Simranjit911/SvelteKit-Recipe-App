@@ -17,8 +17,8 @@
   }
   </script>
   
-  <div class="col-md-6 col-lg-4 mb-4">
-    <div class="card h-100 shadow-sm">
+  <div class="col-md-6 col-lg-4 mb-4 ">
+    <div class="card h-100 shadow-lg">
       <img
         src={recipe.imageUrl}
         class="card-img-top"

@@ -112,7 +112,7 @@
             ? 'btn-outline-danger'
             : 'btn-outline-secondary'} "
           on:click={addToCollection}
-        >
+          title="{data.recipe.collection ? 'Remove from Collection' : 'Add to Collection'}">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -130,11 +130,11 @@
             />
           </svg>
         </button>
-        <button class="btn btn-danger" on:click={handleDelete}>
+        <button class="btn btn-danger" title="Delete Recipe" on:click={handleDelete}>
           <i class="bi bi-trash"></i> Delete
         </button>
         <button
-          class="btn btn-success"
+          class="btn btn-success" title="Update Recipe"
           on:click={() => (showUpdateModal = true)}
         >
           <i class="bi bi-pencil"></i> Update
@@ -149,15 +149,18 @@
       />
 
       <div class="card-body">
-        <h1 class="card-title">{data.recipe.name}</h1>
-        <p class="card-text">{data.recipe.description}</p>
-        <h5>Ingredients:</h5>
+        <h3 class="my-2">Name:</h3>
 
+        <h3 class="mx-2 card-title text-capitalize">{data.recipe.name}</h3>
+     
+        <h5>Ingredients:</h5>
         {#each incred as i}
-          <span class="mx-2 text-white bg-danger rounded text-capitalize px-1"
-            >{i}</span
-          >
+        <span class="mx-2 text-white bg-danger rounded text-capitalize px-1"
+        >{i}</span
+        >
         {/each}
+        <h5 class="my-2">Description:</h5>
+           <p class="card-text text-capitalize">{data.recipe.description}</p>
       </div>
     </div>
   </div>

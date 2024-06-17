@@ -42,22 +42,30 @@
       recipesRef,
       where("uid", "==", user.uid),
       where("name", ">=", searchTerm),
-      where("name", "<=", searchTerm + "\uf8ff")
+      where("name", "<=", searchTerm + "z")
     );
 
     const ingredientsQuery = query(
       recipesRef,
       where("uid", "==", user.uid),
       where("ingredients", ">=", searchTerm),
-      where("ingredients", "<=", searchTerm + "\uF8ff")
+      where("ingredients", "<=", searchTerm + "z")
+    );
+    const descQuery = query(
+      recipesRef,
+      where("uid", "==", user.uid),
+      where("description", ">=", searchTerm),
+      where("description", "<=", searchTerm + "z")
     );
 
     try {
       const nameSnapshot = await getDocs(nameQuery);
       const ingredientsSnapshot = await getDocs(ingredientsQuery);
+      const descSnapshot = await getDocs(descQuery);
 
       let searchResults = [
         ...nameSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+        ...descSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
         ...ingredientsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),

@@ -6,7 +6,7 @@ import { auth } from '$lib/firebase';
 const userStore = writable<User | null>(null);
 export const recipesStore = writable([])
 export const resetBtnClick = writable(false)
-
+export const loadingStore=writable(true)
 
 export function loadUserFromSessionStorage() {
 

@@ -52,6 +52,9 @@
   });
 
   async function handleForm(event: Event) {
+    if(formData.name==""||formData.description==""||formData.ingredients==""){
+            return $toast.error("All text feild are required,Image is optional")
+    }
     let newImageUrl;
     const form = event.target as HTMLFormElement;
     const formDataImg = new FormData(form);
@@ -146,7 +149,7 @@
       <div class="modal-body">
         <form on:submit|preventDefault={handleForm}>
           <div class="form-group">
-            <label for="name" class="form-label">Recipe Name</label>
+            <label for="name" class="form-label">Update Recipe Name</label>
             <input
               type="text"
               id="name"
@@ -158,7 +161,7 @@
             />
           </div>
           <div class="form-group">
-            <label for="image" class="form-label">Recipe Image</label>
+            <label for="image" class="form-label">Update Recipe Image</label>
             <input
               type="file"
               id="image"
@@ -168,7 +171,7 @@
             />
           </div>
           <div class="form-group">
-            <label for="ingredients" class="form-label">Ingredients</label>
+            <label for="ingredients" class="form-label">Update Ingredients</label>
             <textarea
               bind:value={formData.ingredients}
               id="ingredients"
@@ -179,7 +182,7 @@
             ></textarea>
           </div>
           <div class="form-group">
-            <label for="description" class="form-label">Description</label>
+            <label for="description" class="form-label">Update Description</label>
             <textarea
               id="description"
               name="description"

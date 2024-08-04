@@ -24,7 +24,7 @@
       new Promise(async (resolve, reject) => {
         try {
           const res = await fetch(
-            `http://localhost:5173/apis/recipes/${recipeId}`,
+          `https://recipe-app-iota-cyan.vercel.app/apis/recipes/${recipeId}`,
             {
               method: "DELETE",
               headers: {
